@@ -41,16 +41,6 @@ void checkArg(int argc)
     }
 
 
-
-/*struct sequence* safeRealloc (struct bases* ref, int structCount)
-    {
-    struct bases* updateRef;    
-    updateRef = realloc(ref, (structCount+1)* sizeof(struct bases));
-    if (updateRef == NULL) {printf("%s", strerror(12)); exit(EXIT_FAILURE);};  //Out of memory
-    return updateRef;
-    }
-*/
-
 int main (int argc, char** argv) {
     
     time_t begin, end; 
