@@ -101,6 +101,7 @@ int main (int argc, char** argv) {
                 {
                 if (length>=table_size)
                     {
+                    tLen =safeRealloc(tLen, length);
                     while(table_size<=length) {tLen[table_size]=0; table_size++;}; 
                     table_size = length + 1;
                     }
@@ -154,7 +155,7 @@ int main (int argc, char** argv) {
         
     checkFile (output);
     srand(time(NULL));
-    for (i=0; i<=max_length; i++)        // for each size of read
+    for (i=1; i<=max_length; i++)        // for each size of read
         {                  
         if(tLen[i]!=0)                      // if read exist
             {
@@ -164,7 +165,7 @@ int main (int argc, char** argv) {
                 printf("Ref seq length : %d\tstart position %d\t Base : %c\n", ref.seqLength,start_position,ref.bases[start_position]);
                 fprintf(output, ">InSilico read %d\n", readNb); 
                 
-                for (k=0; k<i;k++)                                  // for each base 
+                for (k=1; k<=i;k++)                                  // for each base 
                     {
                     if ((start_position + k)>ref.seqLength) {start_position=start_position-ref.seqLength;}    
                     prob = (rand()%101);                               // select the probability of mutation [1;100]
@@ -199,6 +200,7 @@ int main (int argc, char** argv) {
                 readNb++;                                   // Incrémente le nombre de reads Insilico crées
                 }
             }
+            else {continue;}
         }
     fclose (output);
     printf("Part3 successfull\n\n");
