@@ -1,0 +1,7 @@
+*.o
+PBRandomReads_draft
+*.a
+*~
+a.out
+bin
+PBRandomReads

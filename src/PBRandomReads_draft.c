@@ -1,60 +1,29 @@
+/*
+*/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
 #include <errno.h>   // C Error Codes
+#include <unistd.h>
+#include "utils.h"
+
 
 #define CASE_MUT(B, OPT) case B : mute = OPT[rand()%3]; fprintf(output,"%c", tolower(mute)); break
  
 struct sequence {char* bases; unsigned int seqLength;};
 
-void safeCalloc (int* tLen)
-    {
-    if (tLen == NULL) {printf("\ntLen : %s", strerror(12)); exit(EXIT_FAILURE);};  //Out of memory
-    }
-    
-int* safeReallocInt(int* tLen, unsigned int length)
-    {
-    int *temp = realloc(tLen, ((length+1) * sizeof(int)));      
-    if (temp == NULL) {printf("%s", strerror(12)); exit(EXIT_FAILURE);};  //Out of memory
-    return temp;
-    }
-    
-char* safeReallocChar(char* bases, int unsigned position)
-    {
-    char *temp = realloc(bases, ((position+1) * sizeof(char)));      
-    if (temp == NULL) {printf("%s", strerror(12)); exit(EXIT_FAILURE);};  //Out of memory
-    return temp;
-    }
-        
-void checkFile(FILE* fic)   
-    {
-    if (fic == NULL) 
-        {
-        printf ("Error opening file : %s\n", strerror(2));  //No such file or directory
-        exit(EXIT_FAILURE);;
-        }
-    }
-    
-void checkArg(int argc)   
-    {
-        if (argc != 4)
-        {
-        printf ("The number of argument is not correct : %s\n", strerror(22));
-        exit(EXIT_FAILURE);
-        } 
-    }
-
 
 int main (int argc, char** argv) {
-    
+    char* filename_out = NULL;
+    char* filename_reference = NULL;
     time_t begin, end; 
 
      
 // Part1 : a table (tLen) containing the number of read for each size 
           
-    FILE* input = fopen(argv[1], "r");        // argv[1] = fastq file containing the initial PBReads  
+    FILE* input = NULL;        // argv[1] = fastq file containing the initial PBReads  
     
     int c = 0;                                
     unsigned int length = 0;                  // Read Length
@@ -67,7 +36,7 @@ int main (int argc, char** argv) {
 // Part 2 :  ref is a sequence structure containing informations (bases and length) of the reference
 // Example : a genome of 8 bases AATTCCGG, ref.bases[0]='A', seqLength = 8
 
-    FILE* reference_in = fopen (argv[2], "r");         // fasta file containing the sequence of reference
+    FILE* reference_in = NULL;        // fasta file containing the sequence of reference
 
     int b = 0;                     
     struct sequence ref;
@@ -77,7 +46,7 @@ int main (int argc, char** argv) {
 // Example : >Read1
 //           ATCCc (lowerletter for insertion or substitution)
 
-    FILE* output = fopen (argv[3], "w+");                // Will contain the PB InSilico reads          
+    FILE* output = NULL;                // Will contain the PB InSilico reads          
     int j;
     unsigned int k=0;
     int start_position = 0;
@@ -85,19 +54,65 @@ int main (int argc, char** argv) {
     char ins;               // the inserted base
     char mute;              // the mutated base
     int readNb = 1;         // sequence generated (print in the header of the output)
-
+	int opt;
 
 // BEGIN
 
+	
+//on fait un boucle sur les options disponibles
+// getopt definie plusieurs variable optarg, optind: index dans la boucle , optopt : cf. man getopt
+ 	while ((opt = getopt(argc, argv, "o:r:")) != -1) {
+          switch (opt) {
+           case 'o':
+               filename_out = optarg; //<- optarg est definie par defaut par getopt
+               break;
+           case 'r':
+           		filename_reference = optarg;
+           default: /* '?' */
+               fprintf(stderr, "error\n", argv[0]);
+               exit(EXIT_FAILURE);
+           }
+        }
+
+	if( filename_reference == NULL) {
+		fprintf(stderr,"Error undefined reference\n");
+		return EXIT_FAILURE;
+		}
+
+	// PROCESS INPUT
+	if( optind +1 == argc) {//UN SEUL FICHIER SPECIFIE
+		input = safeOpen(argv[optind],"r");
+		}
+	else if(optind==argc) //PAS DE FICHIER SPECIFIE
+		{
+		fprintf(stderr,"Reading fastq from STDIN\n");
+		input = stdin;	
+		}
+	else
+		{
+		fprintf(stderr,"%s : Too many input files specified\n",argv[0]);
+		return EXIT_FAILURE;
+		}
+
+	//OUTPUT
+	if( filename_out == NULL) {
+		fprintf(stderr,"writing output to STDOUT\n");
+		output= stdout;
+		}
+	else {
+		output = safeOpen(filename_out,"w");
+		}
+ 	
+	
+
     time(&begin);
-    checkArg(argc);
+    
 
 // Part1 : a table (tLen) containing the number of read for each size 
 
     // Open the fastq file containing the reads from PacBio sequencer
     checkFile(input);
-    tLen = calloc(table_size, sizeof(int));   
-    safeCalloc(tLen);
+    tLen = safeCalloc(table_size, sizeof(int));   
 
     while ((c=fgetc(input))!=EOF) 
         {
@@ -107,7 +122,7 @@ int main (int argc, char** argv) {
                 {
                 if (length>=table_size)
                     {
-                    tLen =safeReallocInt(tLen, length);
+                    tLen =(int*)safeRealloc((void*)tLen, length);
                     while(table_size<=length) {tLen[table_size]=0; table_size++;}; 
                     table_size = length + 1;
                     }
@@ -134,8 +149,8 @@ int main (int argc, char** argv) {
 // Part 2 :  ref is a sequence structure containing informations (bases and length) of the reference
 // Example : a genome of 8 bases AATTCCGG, ref.bases[0]='A', seqLength = 8
     
-    checkFile (reference_in);
-    ref.bases = malloc(position * sizeof(char));
+    
+    ref.bases = safeMalloc(position * sizeof(char));
     while ((b=fgetc(reference_in))!=EOF)
         {  
         if (b=='>')  
@@ -153,14 +168,14 @@ int main (int argc, char** argv) {
         ref.bases[position]='\0';
         printf("char %c, position %d\n", ref.bases[position], position);
         ref.seqLength=position-1;
-        printf("Size of the sequence of reference : %d\n", ref.seqLength);
+        fprintf(stderr,"Size of the sequence of reference : %d\n", ref.seqLength);
         printf("Part2 successfull\n\n");
 
 // Part 3 : Create a fasta file containing the InSilico reads 
 // Example : >Read1
 //           ATCCc (lowerletter for insertion or substitution)
         
-    checkFile (output);
+    
     srand(time(NULL));
     for (i=1; i<=max_length; i++)        // for each size of read
         {                  
