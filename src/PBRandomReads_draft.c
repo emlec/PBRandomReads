@@ -6,19 +6,25 @@
 #include <errno.h>   // C Error Codes
 
 #define CASE_MUT(B, OPT) case B : mute = OPT[rand()%3]; fprintf(output,"%c", tolower(mute)); break
-
-struct sequence { char bases[200000]; unsigned int seqLength;};  // je n'arrive pas à le mettre en dynamique 
-
+ 
+struct sequence {char* bases; unsigned int seqLength;};
 
 void safeCalloc (int* tLen)
     {
     if (tLen == NULL) {printf("\ntLen : %s", strerror(12)); exit(EXIT_FAILURE);};  //Out of memory
     }
     
-int* safeRealloc(int* tLen, unsigned int length)
+int* safeReallocInt(int* tLen, unsigned int length)
     {
     int *temp = realloc(tLen, ((length+1) * sizeof(int)));      
-    if (temp == NULL) {printf("\ntLen : %s", strerror(12)); exit(EXIT_FAILURE);};  //Out of memory
+    if (temp == NULL) {printf("%s", strerror(12)); exit(EXIT_FAILURE);};  //Out of memory
+    return temp;
+    }
+    
+char* safeReallocChar(char* bases, int unsigned position)
+    {
+    char *temp = realloc(bases, ((position+1) * sizeof(char)));      
+    if (temp == NULL) {printf("%s", strerror(12)); exit(EXIT_FAILURE);};  //Out of memory
     return temp;
     }
         
@@ -101,7 +107,7 @@ int main (int argc, char** argv) {
                 {
                 if (length>=table_size)
                     {
-                    tLen =safeRealloc(tLen, length);
+                    tLen =safeReallocInt(tLen, length);
                     while(table_size<=length) {tLen[table_size]=0; table_size++;}; 
                     table_size = length + 1;
                     }
@@ -129,7 +135,7 @@ int main (int argc, char** argv) {
 // Example : a genome of 8 bases AATTCCGG, ref.bases[0]='A', seqLength = 8
     
     checkFile (reference_in);
-
+    ref.bases = malloc(position * sizeof(char));
     while ((b=fgetc(reference_in))!=EOF)
         {  
         if (b=='>')  
@@ -138,6 +144,7 @@ int main (int argc, char** argv) {
             }
         else {
             if(isspace(b)) continue;
+            ref.bases = safeReallocChar(ref.bases, position);
             ref.bases[position]=b;
             printf("char %c, position %d\n", ref.bases[position], position);
             position++;
@@ -162,14 +169,12 @@ int main (int argc, char** argv) {
             for (j=0; j<tLen[i]; j++)           // for each read
                 {  
                 start_position = 1 + rand()%ref.seqLength;      // select the beginning in the reference genome
-                //printf("Ref seq length : %d\tstart position %d\t Base : %c\n", ref.seqLength,start_position,ref.bases[start_position]);
                 fprintf(output, ">m160129_165300_42263_c100880132550000001823194304021670_s1_X0/%d/0_%d\n", readNb, i);  // For FALCON compatibility
                 
                 for (k=1; k<=i;k++)                                  // for each base 
                     {
                     if ((start_position+k)>ref.seqLength) {start_position=start_position-ref.seqLength;}    
                     prob = (rand()%101);                               // select the probability of mutation [1;100]
-                    //printf("Base : %c\t probabilité de mutation %d\n", ref.bases[start_position+k], prob);
                     
                     // INSERTION : 11% [0-11]
                     if (prob<=11) 
