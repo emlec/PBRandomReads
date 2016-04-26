@@ -163,7 +163,7 @@ int main (int argc, char** argv) {
                 {  
                 start_position = 1 + rand()%ref.seqLength;      // select the beginning in the reference genome
                 //printf("Ref seq length : %d\tstart position %d\t Base : %c\n", ref.seqLength,start_position,ref.bases[start_position]);
-                fprintf(output, ">InSilico read %d\n", readNb); 
+                fprintf(output, ">m160129_165300_42263_c100880132550000001823194304021670_s1_X0/%d/0_%d\n", readNb, i);  // For FALCON compatibility
                 
                 for (k=1; k<=i;k++)                                  // for each base 
                     {
