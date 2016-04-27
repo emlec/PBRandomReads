@@ -1,29 +1,27 @@
-/*
-*/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
-#include <errno.h>   // C Error Codes
+#include <errno.h>
 #include <unistd.h>
 #include "utils.h"
 
 
-#define CASE_MUT(B, OPT) case B : mute = OPT[rand()%3]; fprintf(output,"%c", tolower(mute)); break
+#define CASE_MUT(B, OPT) case B : mute = OPT[rand()%3]; fprintf(output_file,"%c", tolower(mute)); break
  
 struct sequence {char* bases; unsigned int seqLength;};
-
 
 int main (int argc, char** argv) {
     char* filename_out = NULL;
     char* filename_reference = NULL;
+    int opt;
     time_t begin, end; 
 
      
 // Part1 : a table (tLen) containing the number of read for each size 
           
-    FILE* input = NULL;        // argv[1] = fastq file containing the initial PBReads  
+    FILE* input_file = NULL;        // argv[1] = fastq file containing the initial PBReads  
     
     int c = 0;                                
     unsigned int length = 0;                  // Read Length
@@ -36,17 +34,17 @@ int main (int argc, char** argv) {
 // Part 2 :  ref is a sequence structure containing informations (bases and length) of the reference
 // Example : a genome of 8 bases AATTCCGG, ref.bases[0]='A', seqLength = 8
 
-    FILE* reference_in = NULL;        // fasta file containing the sequence of reference
+    FILE* reference_file = NULL;        // fasta file containing the sequence of reference
 
     int b = 0;                     
     struct sequence ref;
-    int unsigned position = 1;
+    unsigned int position = 1;
 
 // Part 3 : Create a fasta file containing the InSilico reads 
 // Example : >Read1
 //           ATCCc (lowerletter for insertion or substitution)
 
-    FILE* output = NULL;                // Will contain the PB InSilico reads          
+    FILE* output_file = NULL;                // Will contain the PB InSilico reads          
     int j;
     unsigned int k=0;
     int start_position = 0;
@@ -54,67 +52,67 @@ int main (int argc, char** argv) {
     char ins;               // the inserted base
     char mute;              // the mutated base
     int readNb = 1;         // sequence generated (print in the header of the output)
-	int opt;
+
 
 // BEGIN
 
-	
-//on fait un boucle sur les options disponibles
-// getopt definie plusieurs variable optarg, optind: index dans la boucle , optopt : cf. man getopt
- 	while ((opt = getopt(argc, argv, "o:r:")) != -1) {
+    time(&begin);
+
+//Parsing arguments using getopt
+    while ((opt = getopt(argc, argv, "o:r:")) != -1) {
           switch (opt) {
            case 'o':
-               filename_out = optarg; //<- optarg est definie par defaut par getopt
+               filename_out = optarg;
                break;
            case 'r':
-           		filename_reference = optarg;
-           default: /* '?' */
-               fprintf(stderr, "error\n", argv[0]);
+                filename_reference = optarg;
+                break;
+           default: 
+               fprintf(stderr, "error %s\n", argv[0]); // TODO 
                exit(EXIT_FAILURE);
            }
         }
 
-	if( filename_reference == NULL) {
-		fprintf(stderr,"Error undefined reference\n");
-		return EXIT_FAILURE;
-		}
+    if (filename_reference == NULL) {
+        fprintf(stderr, "Error undefined reference\n");
+        return EXIT_FAILURE;
+        }
+    else {
+        reference_file = safeOpen(filename_reference,"r")
+        }
 
-	// PROCESS INPUT
-	if( optind +1 == argc) {//UN SEUL FICHIER SPECIFIE
-		input = safeOpen(argv[optind],"r");
-		}
-	else if(optind==argc) //PAS DE FICHIER SPECIFIE
-		{
-		fprintf(stderr,"Reading fastq from STDIN\n");
-		input = stdin;	
-		}
-	else
-		{
-		fprintf(stderr,"%s : Too many input files specified\n",argv[0]);
-		return EXIT_FAILURE;
-		}
+    // PROCESS INPUT
+    if (optind +1 == argc) {   //UN SEUL FICHIER SPECIFIE
+        input_file = safeOpen(argv[optind], "r");
+        }
+    else if (optind==argc) //PAS DE FICHIER SPECIFIE, ex : gunzip -c file.fastq.gz | program -o *.fasta -r *.fasta
+        {
+        fprintf(stderr,"Reading fastq from STDIN\n");
+        input_file = stdin;
+          
+        }
+    else
+        {
+        fprintf(stderr,"%s : Too many input files specified\n",argv[0]);
+        return EXIT_FAILURE;
+        }
 
-	//OUTPUT
-	if( filename_out == NULL) {
-		fprintf(stderr,"writing output to STDOUT\n");
-		output= stdout;
-		}
-	else {
-		output = safeOpen(filename_out,"w");
-		}
- 	
-	
+    //OUTPUT
+    if (filename_out == NULL) {
+        fprintf(stderr,"Writing output to STDOUT\n");
+        output_file = stdout;
+        }
+    else {
+        output_file = safeOpen(filename_out,"w");
+        }
 
-    time(&begin);
+
     
 
 // Part1 : a table (tLen) containing the number of read for each size 
 
-    // Open the fastq file containing the reads from PacBio sequencer
-    checkFile(input);
     tLen = safeCalloc(table_size, sizeof(int));   
-
-    while ((c=fgetc(input))!=EOF) 
+    while ((c=fgetc(input_file))!=EOF) 
         {
         if (c=='\n')
             {   
@@ -122,7 +120,7 @@ int main (int argc, char** argv) {
                 {
                 if (length>=table_size)
                     {
-                    tLen =(int*)safeRealloc((void*)tLen, length);
+                    tLen = safeRealloc(tLen, (length+1)*sizeof(int));
                     while(table_size<=length) {tLen[table_size]=0; table_size++;}; 
                     table_size = length + 1;
                     }
@@ -140,42 +138,42 @@ int main (int argc, char** argv) {
     // To check the script    
     for (i=0; i<=max_length; i++) 
         {
-        printf("tLen  : taille du read  : %d\t nombre de read %d\n", i, tLen[i]);
+        fprintf(stderr, "tLen  : size of reads : %d\t number of reads %d\n", i, tLen[i]);
         }
-    fclose (input);
-    printf("Part1 successfull\n\n");
+    fclose (input_file);
+    fprintf(stderr, "Part1 successfull\n\n");
 
 
-// Part 2 :  ref is a sequence structure containing informations (bases and length) of the reference
+// Part 2 :  ref is a sequence structure containing informations (bases and length) of the genome of reference
 // Example : a genome of 8 bases AATTCCGG, ref.bases[0]='A', seqLength = 8
     
     
-    ref.bases = safeMalloc(position * sizeof(char));
-    while ((b=fgetc(reference_in))!=EOF)
+    ref.bases = safeCalloc(position, sizeof(char));
+    while ((b=fgetc(reference_file))!=EOF)
         {  
         if (b=='>')  
             {
-            while ((b=fgetc(reference_in))!=EOF && b!='\n') { continue; }
+            while ((b=fgetc(reference_file))!=EOF && b!='\n') { continue; }
             }
         else {
             if(isspace(b)) continue;
-            ref.bases = safeReallocChar(ref.bases, position);
+            ref.bases = safeRealloc(ref.bases, (position+1)*sizeof(char));
             ref.bases[position]=b;
-            printf("char %c, position %d\n", ref.bases[position], position);
             position++;
             }
         }
         ref.bases[position]='\0';
-        printf("char %c, position %d\n", ref.bases[position], position);
         ref.seqLength=position-1;
         fprintf(stderr,"Size of the sequence of reference : %d\n", ref.seqLength);
-        printf("Part2 successfull\n\n");
+        fprintf(stderr, "Part2 successfull\n\n");
+    
+    fclose(reference_file);
 
 // Part 3 : Create a fasta file containing the InSilico reads 
 // Example : >Read1
 //           ATCCc (lowerletter for insertion or substitution)
-        
-    
+
+
     srand(time(NULL));
     for (i=1; i<=max_length; i++)        // for each size of read
         {                  
@@ -184,7 +182,7 @@ int main (int argc, char** argv) {
             for (j=0; j<tLen[i]; j++)           // for each read
                 {  
                 start_position = 1 + rand()%ref.seqLength;      // select the beginning in the reference genome
-                fprintf(output, ">m160129_165300_42263_c100880132550000001823194304021670_s1_X0/%d/0_%d\n", readNb, i);  // For FALCON compatibility
+                fprintf(output_file, ">m160129_165300_42263_c100880132550000001823194304021670_s1_X0/%d/0_%d\n", readNb, i);  // For FALCON compatibility
                 
                 for (k=1; k<=i;k++)                                  // for each base 
                     {
@@ -195,7 +193,7 @@ int main (int argc, char** argv) {
                     if (prob<=11) 
                         {            
                         ins = "ATCG"[rand()%4];
-                        fprintf(output, "%c%c", toupper(ref.bases[start_position+k]), tolower(ins));
+                        fprintf(output_file, "%c%c", toupper(ref.bases[start_position+k]), tolower(ins));
                         }
                                               
                     // SUBSTITUTION : 1% [12]
@@ -213,21 +211,21 @@ int main (int argc, char** argv) {
                     // CORRECT : 84% [13-96]
                     else if (prob<=96) 
                         {
-                        fprintf(output, "%c", toupper(ref.bases[start_position+k]));
+                        fprintf(output_file, "%c", toupper(ref.bases[start_position+k]));
                         }
                     }
-                fprintf(output, "\n");
+                fprintf(output_file, "\n");
                 readNb++;                                   // Incrémente le nombre de reads Insilico crées
                 }
             }
             else {continue;}
         }
-    fclose (output);
-    printf("Part3 successfull\n\n");
+    fclose (output_file);
+    fprintf(stderr, "Part3 successfull\n\n");
     free (tLen);
     time(&end);
 
-    printf("Elapsed time %f sec.\nPB reads stored in %s \nEND of the program\n", difftime(end, begin),argv[3]);
+    printf("Elapsed time %f sec.\n", difftime(end, begin));
 
     return 0;
     }

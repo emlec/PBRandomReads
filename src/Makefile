@@ -20,7 +20,7 @@ all: ../bin/${PROG}
 
 ../bin/${PROG} : ${PROG}.o utils.o
 	mkdir -p ../bin
-	${CC} ${CFLAGS} -o $@ -c $^
+	${CC} ${CFLAGS} -o $@ $^
 
 ${PROG}.o: utils.h
 
@@ -29,7 +29,7 @@ ${PROG}.o: utils.h
 
 
 clean:
-	rm -f ../bin/${PROG} *.o
+	rm -f *.o
 
 mrproper: clean
 	rm -f ../bin/${PROG}
