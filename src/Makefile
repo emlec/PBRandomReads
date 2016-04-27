@@ -29,7 +29,7 @@ ${PROG}.o: utils.h
 
 
 clean:
-	rm -f ../bin/${PROG} *.o
+	rm -f *.o
 
 mrproper: clean
 	rm -f ../bin/${PROG}
