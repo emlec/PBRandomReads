@@ -1,30 +1,35 @@
-# target : dep1 dep2 dep3
+# Makefile structure
+
+#target : dep1 dep2 dep3
 #	stmt1
 #	stmt2
-#	stmt3	
-#
-# $@ nom de la cible(target)
-# $< nom de la premiere dependance
-# $^  TOUTES les dependances
+#	stmt3
 
-## juste des noms, pas des vrais fichiers
-PROG=PBRandomReads
-CFLAGS=-Wall -g
+# $@ target name
+# $< first dependency
+# $^  all the dependencies
 
-.PHONY:all clean
+
+PROG = PBRandomReads_draft
+CFLAGS = -Wall -g
+CC = gcc
+
+.PHONY:all clean mrproper
 
 all: ../bin/${PROG}
 
 ../bin/${PROG} : ${PROG}.o utils.o
 	mkdir -p ../bin
-	gcc -o $@ $^
+	${CC} ${CFLAGS} -o $@ -c $^
 
-${PROG}.o : ${PROG}_draft.c utils.h
-	gcc ${CFLAGS} -o $@ -c $<
+${PROG}.o: utils.h
 
+%o:%c
+	${CC} ${CFLAGS} -o $@ -c $<
 
-utils.o : utils.c utils.h
-	gcc ${CFLAGS} -o $@ -c $<
 
 clean:
 	rm -f ../bin/${PROG} *.o
+
+mrproper: clean
+	rm -f ../bin/${PROG}
