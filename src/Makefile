@@ -20,7 +20,7 @@ all: ../bin/${PROG}
 
 ../bin/${PROG} : ${PROG}.o utils.o
 	mkdir -p ../bin
-	${CC} ${CFLAGS} -o $@ -c $^
+	${CC} ${CFLAGS} -o $@ $^
 
 ${PROG}.o: utils.h
 
