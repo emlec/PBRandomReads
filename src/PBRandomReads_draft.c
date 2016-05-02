@@ -10,6 +10,13 @@
 
 #define CASE_MUT(B, OPT) case B : mute = OPT[rand()%3]; fprintf(output_file,"%c", tolower(mute)); break
  
+ 
+typedef struct LengthToOccurence
+	{
+	int* lengths;
+	unsigned int num_elements;
+	}; 
+ 
 struct sequence {char* bases; unsigned int seqLength;};
 
 int main (int argc, char** argv) {
@@ -88,7 +95,7 @@ int main (int argc, char** argv) {
     else if (optind==argc) //PAS DE FICHIER SPECIFIE, ex : gunzip -c file.fastq.gz | program -o *.fasta -r *.fasta
         {
         fprintf(stderr,"Reading fastq from STDIN\n");
-        input_file = stdin;
+        input_file = stdin; //et avec gzip ??? :-)
           
         }
     else
