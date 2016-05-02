@@ -12,3 +12,5 @@
 all clean:
 	(cd src && make $@)
 
+#test: all
+#	./bin/pii -r tests/ref.fa -i in/fa azldazd > /dev/nukk
