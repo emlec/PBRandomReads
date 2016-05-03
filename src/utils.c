@@ -1,4 +1,8 @@
 #include "utils.h"
+#include <zlib.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 
 void* _safeCalloc(const char* src, int line,size_t num_elements, size_t size)
@@ -21,15 +25,17 @@ void* _safeRealloc(const char* src, int line,void* ptr, size_t size)
     return ptr_temp;
     }
 
-FILE* _safeOpen(const char* src, int line, const char* filename, const char* mode)  
+gzFile _safeOpen(const char* src, int line, const char* filename, const char* mode)  //gzopen can be used to read a file which is not in gzip format; in this case gzread will directly read from the file without decompression. 
     {
-    FILE*  fic = fopen(filename, mode);
-    if (fic == NULL) 
+    gzFile file = gzopen(filename, mode);
+    if (file == NULL)                               // gzopen returns NULL if the file could not be opened
         {
         fprintf(stderr,"[%s:%d] Error opening file %s : %s.\n", src, line, filename, strerror(errno));
         exit(EXIT_FAILURE);
         }
-    return fic;
+    return file;
     }
+
+
 
 

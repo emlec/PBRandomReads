@@ -9,27 +9,29 @@
 # $< first dependency
 # $^  all the dependencies
 
-
-PROG = PBRandomReads_draft
-CFLAGS = -Wall -g
 CC = gcc
+CFLAGS = -Wall -g
+LDFLAGS = -lz
+EXEC = PBRandomReads_draft
+
+
 
 .PHONY:all clean mrproper
 
-all: ../bin/${PROG}
+all: ../bin/${EXEC}
 
-../bin/${PROG} : ${PROG}.o utils.o
+../bin/${EXEC} : ${EXEC}.o utils.o fasta.o reads_distribution.o
 	mkdir -p ../bin
-	${CC} ${CFLAGS} -o $@ $^
+	${CC} -o $@ $^ ${LDFLAGS}
 
-${PROG}.o: utils.h
+${PROG}.o: utils.h fasta.h reads_distribution.h
 
 %o:%c
-	${CC} ${CFLAGS} -o $@ -c $<
+	${CC} -o $@ -c $< ${CFLAGS}
 
 
 clean:
-	rm -f *.o
+	rm -f *.o *.gch
 
 mrproper: clean
-	rm -f ../bin/${PROG}
+	rm -f ../bin/${EXEC}
