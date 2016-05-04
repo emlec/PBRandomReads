@@ -45,12 +45,11 @@ void make_distribution(gzFile file, Read_DistributionPtr reads, int seq_type){
             current_read_length=0;
             nLine++;
             } 
-         else 
+        else 
             {
             current_read_length++;
             }
         }
-   // gzclose(file);
     }
 
 

@@ -43,7 +43,7 @@ void create_PBRandomReads (InSilicoReadsPtr inSilicoDataSet){
                         {
                         if ((start_position+k)>inSilicoDataSet->seq->length) {start_position=start_position-inSilicoDataSet->seq->length;}    
                         prob = (rand()%101);                               // select the probability of mutation [1;100]
-                        
+                        //fprintf(stderr, "probability : %d \n", prob);
                         // INSERTION : 11% [0-11]
                         if (prob<=11) 
                             {            
@@ -70,7 +70,8 @@ void create_PBRandomReads (InSilicoReadsPtr inSilicoDataSet){
                             }
                         }
                     gzprintf(inSilicoDataSet->inSilicoReadsFile, "\n");
-                    readNb++;                                   // Incrémente le nombre de reads Insilico crées
+                    readNb++;
+                                                       // Incrémente le nombre de reads Insilico crées
                     }
                 }
                 else {continue;}
@@ -86,7 +87,6 @@ void check_PBDataSet(InSilicoReadsPtr inSilicoDataSet, char* filename_InSilicoRe
     check_distribution(InSilicoDistr);
     ReadFree(InSilicoDistr);
 }
-
 
 
 void inSilicoDataSet_Free(InSilicoReadsPtr inSilicoDataSet){

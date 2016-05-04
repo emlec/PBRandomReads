@@ -28,22 +28,25 @@ void readOneSequenceFromFile(gzFile file, SequencePtr seq) {
     int buffer_size=1024;
     int c =0;
     unsigned int current_bases_added = 0;
-    
+    unsigned int current_header_size = 1;
     
     while ((c=gzgetc(file))!=EOF)  // gzgetc does not check to see if file is NULL
         {  
-        if (c=='>')  
-            {
-            while ((c=gzgetc(file))!=EOF && c!='\n') { continue; }
-            /*if(seq->name[0]!=0) {
-            fprintf(stderr,"BE CAREFUL! The file contains more than one sequence");
-            exit(EXIT_FAILURE);
-            }
+        if (c=='>') { 
+            if(seq->name[0]!=0) {
+                fprintf(stderr,"BE CAREFUL! The file contains more than one sequence");
+                exit(EXIT_FAILURE);
+            }           
             while ((c=gzgetc(file))!=EOF && c!='\n') {  // ecrire le nom de la séquence dans name
+                
+                seq->name = safeRealloc(seq->name, current_header_size*sizeof(char)); 
+                seq->name[current_header_size-1]=c;
                 current_header_size++;
-                seq->name = safeRealloc(seq->name, current_header_size*size(char));} 
-                seq->name[*/
             }
+            fprintf(stderr, "Name of the sequence : %s\n", seq->name);
+            continue; 
+            }
+            
         else {
             if(isspace(c)) continue;
             else {

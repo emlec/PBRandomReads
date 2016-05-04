@@ -18,6 +18,10 @@
 // Example : >Read1
 //           ATCCc (lowerletter for insertion or substitution)
 
+// TODO : reverse complement, fonction parsing
+// DEBUG : distribution insilico read 
+// ADD : print percent, modification to check
+
 
 int main (int argc, char** argv) {
     char* filename_InSilicoReads = NULL;
@@ -108,7 +112,6 @@ int main (int argc, char** argv) {
     //check_PBDataSet(inSilicoDataSet_Ptr);
     check_PBDataSet(inSilicoDataSet_Ptr, filename_InSilicoReads);
     fprintf(stderr, "Part3 successfull\n\n");
-
 
 
 
