@@ -6,15 +6,15 @@
 #include "fasta.h"
 
 
-InSilicoReadsPtr _initStructInSilicoReads(const char* src, int line, SequencePtr seq, gzFile inSilicoReadsFile, Read_DistributionPtr reads){
-    InSilicoReadsPtr inSilicoDataSet = (InSilicoReadsPtr)safeCalloc(1, sizeof(InSilicoReads));
+InSilicoReadsPtr _initStructInSilicoReads(const char* src, int line, SequencePtr seqPtr, gzFile inSilicoReadsFile, Read_DistributionPtr readsPtr){
+    InSilicoReadsPtr inSilicoDataSet =(InSilicoReadsPtr)safeCalloc(1, sizeof(InSilicoReads));
     if(inSilicoDataSet==NULL) {
         fprintf(stderr,"[%s:%d] OUT OF MEMORY",src ,line); 
         exit(EXIT_FAILURE);
     }
-    inSilicoDataSet->seq=seq;
+    inSilicoDataSet->seq= seqPtr;   //je prends la valeur contenue dans seqPtr c'est à dire l'adresse de seq
     inSilicoDataSet->inSilicoReadsFile=inSilicoReadsFile;
-    inSilicoDataSet->reads=reads; 
+    inSilicoDataSet->reads=readsPtr; 
     return inSilicoDataSet;
 }
 
@@ -75,17 +75,18 @@ void create_PBRandomReads (InSilicoReadsPtr inSilicoDataSet){
                 }
                 else {continue;}
             }
-        gzclose(inSilicoDataSet->inSilicoReadsFile);
+        
     }
 
-void check_PBDataSet (InSilicoReadsPtr inSilicoDataSet){
+void check_PBDataSet(InSilicoReadsPtr inSilicoDataSet){
     
     Read_DistributionPtr InSilicoDistr = initStructReadDistribution();
-    fprintf(stderr,"Checking sequence of reference :\n");
-
-    make_distribution(inSilicoDataSet->inSilicoReadsFile,InSilicoDistr);
-    check_distribution (inSilicoDataSet->reads);
-    fprintf(stderr, "Part3 successfull\n\n");
+  
+    make_distribution(inSilicoDataSet->inSilicoReadsFile,InSilicoDistr, 2);
+    
+    fprintf(stderr, "check length max %d", InSilicoDistr->max_length);
+    check_distribution(InSilicoDistr);
+    ReadFree(InSilicoDistr);
 }
 
 
@@ -94,5 +95,4 @@ void inSilicoDataSet_Free(InSilicoReadsPtr inSilicoDataSet){
     if(inSilicoDataSet==NULL) return;
     free(inSilicoDataSet);
 }
-
 

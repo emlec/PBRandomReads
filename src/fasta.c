@@ -68,7 +68,7 @@ void check_reference (SequencePtr seq){
     for (i=0; i<seq->length; i++) {
         fprintf(stderr, "Sequence %c\t position %d\n", seq->bases[i],i);
         }
-    fprintf(stderr,"Size of the sequence of reference : %d\nPart2 successfull\n\n", seq->length);
+    fprintf(stderr,"Size of the sequence of reference : %d\n", seq->length);
     }
 
 

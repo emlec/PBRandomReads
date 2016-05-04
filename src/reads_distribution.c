@@ -19,19 +19,19 @@ Read_DistributionPtr _initStructReadDistribution(const char* src, int line){
 }
     
 
-void make_distribution(gzFile file, Read_DistributionPtr reads){
-
+void make_distribution(gzFile file, Read_DistributionPtr reads, int seq_type){
+    
     int current_read_base = 0;
     unsigned int current_read_length = 0;
     unsigned int table_size = 1;
-    int type_of_line = 0;                            
+    int nLine = 0;                            
 
     fprintf(stderr,"Checking ReadDistribution :\n");
     while ((current_read_base=gzgetc(file))!=EOF) 
         {
         if (current_read_base=='\n')            
             {   
-            if (type_of_line%4==1)          // 1==sequence  
+            if (nLine%seq_type==1)          // 1==sequence  
                 {
                 if (current_read_length>=table_size)
                     {
@@ -43,14 +43,14 @@ void make_distribution(gzFile file, Read_DistributionPtr reads){
                 if (current_read_length>reads->max_length) { reads->max_length=current_read_length; fprintf(stderr,"The max size of read is : %d bases\n", reads->max_length);}
                 }
             current_read_length=0;
-            type_of_line++;
+            nLine++;
             } 
          else 
             {
             current_read_length++;
             }
         }
-    gzclose(file);
+    //gzclose(file);
     }
 
 
@@ -62,7 +62,6 @@ void check_distribution (Read_DistributionPtr reads){
         fprintf(stderr, "Size of read : %d bases\tnumber of reads : %d\n", i+1, reads->num_elements[i]);
         }
     }
-    fprintf(stderr, "Part1 successfull\n\n");
 }
 
 

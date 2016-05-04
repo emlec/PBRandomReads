@@ -15,7 +15,6 @@ typedef struct InSilicoReads_t {
     Read_DistributionPtr reads;
 } InSilicoReads, *InSilicoReadsPtr;
 
-
 InSilicoReadsPtr _initStructInSilicoReads(const char* src, int line, SequencePtr seq, gzFile inSilicoReadsFile, Read_DistributionPtr reads);
 #define initStructInSilicoReads(SEQ_PTR, FIC, READS_PTR) _initStructInSilicoReads(__FILE__, __LINE__, SEQ_PTR, FIC, READS_PTR);
 

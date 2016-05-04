@@ -33,8 +33,8 @@ int main (int argc, char** argv) {
     SequencePtr referencePtr = initStructSequence();
 
     gzFile inSilicoReadsFile = NULL;                // Will contain the PB InSilico reads          
-    InSilicoReadsPtr inSilicoDataSet_Ptr = initStructInSilicoReads(referencePtr, inSilicoReadsFile, readsDistrPtr);
-
+    InSilicoReadsPtr inSilicoDataSet_Ptr = NULL;
+   
     time(&begin);
 
 //Parsing arguments using getopt
@@ -90,26 +90,35 @@ int main (int argc, char** argv) {
 
 // Part1
 
-    make_distribution(PBReads_fastqFile, readsDistrPtr);
+    make_distribution(PBReads_fastqFile, readsDistrPtr,4);
     check_distribution(readsDistrPtr);
+    fprintf(stderr, "Part1 successfull\n\n");
 
 
 // Part 2
     
     readOneSequenceFromFile(reference_file, referencePtr);
     check_reference (referencePtr);
-
+    fprintf(stderr, "Part2 successfull\n\n");
+    
 // Part 3
 
+    inSilicoDataSet_Ptr = initStructInSilicoReads(referencePtr, inSilicoReadsFile, readsDistrPtr);
     create_PBRandomReads(inSilicoDataSet_Ptr);
-    check_PBDataSet (inSilicoDataSet_Ptr);
+    check_PBDataSet(inSilicoDataSet_Ptr);
+    fprintf(stderr, "Part3 successfull\n\n");
+
+
+
 
 // End
 
+    gzclose(PBReads_fastqFile);
+    gzclose(inSilicoReadsFile);
     SequenceFree(referencePtr);
     ReadFree(readsDistrPtr);
     inSilicoDataSet_Free(inSilicoDataSet_Ptr);
-    
+
     time(&end);
 
     fprintf(stderr, "Elapsed time %f sec.\n", difftime(end, begin));
