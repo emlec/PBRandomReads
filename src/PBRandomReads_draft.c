@@ -105,7 +105,8 @@ int main (int argc, char** argv) {
 
     inSilicoDataSet_Ptr = initStructInSilicoReads(referencePtr, inSilicoReadsFile, readsDistrPtr);
     create_PBRandomReads(inSilicoDataSet_Ptr);
-    check_PBDataSet(inSilicoDataSet_Ptr);
+    //check_PBDataSet(inSilicoDataSet_Ptr);
+    check_PBDataSet(inSilicoDataSet_Ptr, filename_InSilicoReads);
     fprintf(stderr, "Part3 successfull\n\n");
 
 

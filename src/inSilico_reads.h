@@ -19,7 +19,7 @@ InSilicoReadsPtr _initStructInSilicoReads(const char* src, int line, SequencePtr
 #define initStructInSilicoReads(SEQ_PTR, FIC, READS_PTR) _initStructInSilicoReads(__FILE__, __LINE__, SEQ_PTR, FIC, READS_PTR);
 
 void create_PBRandomReads (InSilicoReadsPtr inSilicoDataSet);
-void check_PBDataSet (InSilicoReadsPtr inSilicoDataSet);
+void check_PBDataSet(InSilicoReadsPtr inSilicoDataSet, char* filename_InSilicoReads);
 void inSilicoDataSet_Free(InSilicoReadsPtr inSilicoDataSet);
 
 #endif

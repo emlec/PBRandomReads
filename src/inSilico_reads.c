@@ -75,16 +75,14 @@ void create_PBRandomReads (InSilicoReadsPtr inSilicoDataSet){
                 }
                 else {continue;}
             }
-        
+        gzclose(inSilicoDataSet->inSilicoReadsFile);
     }
 
-void check_PBDataSet(InSilicoReadsPtr inSilicoDataSet){
+void check_PBDataSet(InSilicoReadsPtr inSilicoDataSet, char* filename_InSilicoReads){
     
     Read_DistributionPtr InSilicoDistr = initStructReadDistribution();
-  
+    inSilicoDataSet->inSilicoReadsFile = safeOpen(filename_InSilicoReads,"rb");
     make_distribution(inSilicoDataSet->inSilicoReadsFile,InSilicoDistr, 2);
-    
-    fprintf(stderr, "check length max %d", InSilicoDistr->max_length);
     check_distribution(InSilicoDistr);
     ReadFree(InSilicoDistr);
 }
