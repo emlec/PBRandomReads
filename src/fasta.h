@@ -2,6 +2,10 @@
 #define FASTA_H
 #include <stdio.h>
 #include <zlib.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <errno.h> 
 
 typedef struct sequence_t {
     char* bases;
@@ -9,12 +13,12 @@ typedef struct sequence_t {
     unsigned int length;
 } Sequence,*SequencePtr;
 
+SequencePtr _initStructSequence(const char* src, int line);
+#define initStructSequence() _initStructSequence(__FILE__, __LINE__);
 
-SequencePtr readOneSequenceFromFile(gzFile file);
+void readOneSequenceFromFile(gzFile file, SequencePtr seq);
 void SequenceFree(SequencePtr seq);
-
-
+void check_reference (SequencePtr seq);
 
 
 #endif
-

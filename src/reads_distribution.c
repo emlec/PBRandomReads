@@ -4,20 +4,29 @@
 #include <zlib.h>
 
 
-Read_DistributionPtr make_distribution(gzFile file){
+Read_DistributionPtr _initStructReadDistribution(const char* src, int line){
+    
+    Read_DistributionPtr reads = (Read_DistributionPtr)safeCalloc(1, sizeof(Read_Distribution));
+    if(reads==NULL) {
+        fprintf(stderr,"[%s:%d] OUT OF MEMORY",src ,line); 
+        exit(EXIT_FAILURE);
+        }
+    reads->num_elements=(int*)safeCalloc(1, sizeof(int));
+    reads->num_elements[0]=0;
+    reads->max_length=0;
+    
+    return reads;
+}
+    
+
+void make_distribution(gzFile file, Read_DistributionPtr reads){
 
     int current_read_base = 0;
     unsigned int current_read_length = 0;
     unsigned int table_size = 1;
     int type_of_line = 0;                            
 
-        
-    Read_DistributionPtr read = (Read_DistributionPtr)safeCalloc(1, sizeof(Read_Distribution));
-    read->num_elements=(int*)safeCalloc(1, sizeof(int));
-    read->num_elements[0]=0;
-    read->max_length=0;
-            
-
+    fprintf(stderr,"Checking ReadDistribution :\n");
     while ((current_read_base=gzgetc(file))!=EOF) 
         {
         if (current_read_base=='\n')            
@@ -26,12 +35,12 @@ Read_DistributionPtr make_distribution(gzFile file){
                 {
                 if (current_read_length>=table_size)
                     {
-                    read->num_elements=safeRealloc(read->num_elements, (current_read_length+1)*sizeof(int));
-                    while(table_size<=current_read_length) {read->num_elements[table_size]=0; table_size++;}; 
+                    reads->num_elements=safeRealloc(reads->num_elements, (current_read_length+1)*sizeof(int));
+                    while(table_size<=current_read_length) {reads->num_elements[table_size]=0; table_size++;}; 
                     table_size = current_read_length + 1;
                     }
-                read->num_elements[current_read_length-1]++;
-                if (current_read_length>read->max_length) { read->max_length=current_read_length; printf("The max size of read is : %d bases\n", read->max_length);}
+                reads->num_elements[current_read_length-1]++;
+                if (current_read_length>reads->max_length) { reads->max_length=current_read_length; fprintf(stderr,"The max size of read is : %d bases\n", reads->max_length);}
                 }
             current_read_length=0;
             type_of_line++;
@@ -41,24 +50,25 @@ Read_DistributionPtr make_distribution(gzFile file){
             current_read_length++;
             }
         }
-    return read;
+    gzclose(file);
     }
 
 
-void check_distribution (Read_DistributionPtr read){
+void check_distribution (Read_DistributionPtr reads){
     
     unsigned int i;    
-    for (i=0; i<=read->max_length; i++) {
-        if (read->num_elements != 0) {
-        fprintf(stdout, "size of read %dbases\tnumber of reads%d\n", i+1, read->num_elements[i]);
+    for (i=0; i<reads->max_length; i++) {
+        if (reads->num_elements[i] != 0) {
+        fprintf(stderr, "Size of read : %d bases\tnumber of reads : %d\n", i+1, reads->num_elements[i]);
         }
-    fprintf(stdout, "Part1 successfull\n\n");
     }
+    fprintf(stderr, "Part1 successfull\n\n");
 }
 
 
-void ReadFree(Read_DistributionPtr read) {
-    if(read==NULL) return;   // void donc return rien accepté
-    free(read->num_elements);
-    free(read);
+
+void ReadFree(Read_DistributionPtr reads) {
+    if(reads==NULL) return;   // void donc return rien accepté
+    free(reads->num_elements);
+    free(reads);
     }

@@ -11,20 +11,24 @@
 
 CC = gcc
 CFLAGS = -Wall -g
-LDFLAGS = -lz
+LDFLAGS = -lz 
 EXEC = PBRandomReads_draft
 
 
 
 .PHONY:all clean mrproper
 
+test: all
+	../bin/${EXEC} -r ../testFiles/10basesRef.fa -o ../outputResult -s ../testFiles/2reads.fq > /dev/null 
+
+
 all: ../bin/${EXEC}
 
-../bin/${EXEC} : ${EXEC}.o utils.o fasta.o reads_distribution.o
+../bin/${EXEC} : ${EXEC}.o utils.o fasta.o reads_distribution.o inSilico_reads.o
 	mkdir -p ../bin
 	${CC} -o $@ $^ ${LDFLAGS}
 
-${PROG}.o: utils.h fasta.h reads_distribution.h
+${PROG}.o: utils.h fasta.h reads_distribution.h inSilico_reads.h
 
 %o:%c
 	${CC} -o $@ -c $< ${CFLAGS}

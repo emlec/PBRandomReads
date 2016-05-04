@@ -3,14 +3,19 @@
 #include <stdio.h>
 #include <zlib.h>
 
-typedef struct LengthToOccurence_t
+typedef struct ReadDistribution_t
     {
     int* num_elements;
     unsigned int max_length;
     } Read_Distribution, *Read_DistributionPtr; 
-    
-Read_DistributionPtr make_distribution(gzFile file);
-void check_distribution (Read_DistributionPtr read);
-void ReadFree(Read_DistributionPtr read);
+ 
+ 
+ 
+Read_DistributionPtr _initStructReadDistribution(const char* src, int line);
+#define initStructReadDistribution() _initStructReadDistribution(__FILE__, __LINE__);
+
+void make_distribution(gzFile file, Read_DistributionPtr reads);
+void check_distribution (Read_DistributionPtr reads);
+void ReadFree(Read_DistributionPtr reads);
 
 #endif

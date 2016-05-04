@@ -15,7 +15,7 @@ void* _safeCalloc(const char* src, int line,size_t num_elements, size_t size)
     return ptr;
     }
 
-void* _safeRealloc(const char* src, int line,void* ptr, size_t size)
+void* _safeRealloc(const char* src, int line, void* ptr, size_t size)
     {
     void* ptr_temp = realloc(ptr,size);
     if(ptr==NULL) {
@@ -35,6 +35,8 @@ gzFile _safeOpen(const char* src, int line, const char* filename, const char* mo
         }
     return file;
     }
+    
+
 
 
 
