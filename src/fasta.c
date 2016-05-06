@@ -43,7 +43,7 @@ void readOneSequenceFromFile(gzFile file, SequencePtr seq) {
                 seq->name[current_header_size-1]=c;
                 current_header_size++;
             }
-            fprintf(stderr, "Name of the sequence : %s\n", seq->name);
+           // fprintf(stderr, "Name of the sequence : %s\n", seq->name);
             continue; 
             }
             
@@ -53,13 +53,12 @@ void readOneSequenceFromFile(gzFile file, SequencePtr seq) {
                 if (current_bases_added+1>buffer_size) {
                     buffer_size*=2;
                     seq->bases = safeRealloc(seq->bases, buffer_size*sizeof(char));}
-                seq->bases[current_bases_added]=c;
+                seq->bases[current_bases_added]=toupper(c);
                 current_bases_added++;
             } 
         }
     }
     seq->length=current_bases_added;
-    gzclose(file);
 }
 
 
@@ -67,9 +66,9 @@ void readOneSequenceFromFile(gzFile file, SequencePtr seq) {
 void check_reference (SequencePtr seq){
     
     unsigned int i; 
-    fprintf(stderr,"Checking sequence of reference :\n");
+    fprintf(stderr,"Checking sequence of reference : %s\n", seq->name);
     for (i=0; i<seq->length; i++) {
-        fprintf(stderr, "Sequence %c\t position %d\n", seq->bases[i],i);
+        fprintf(stderr, "Base %c\t position %d\n", seq->bases[i],i);
         }
     fprintf(stderr,"Size of the sequence of reference : %d\n", seq->length);
     }

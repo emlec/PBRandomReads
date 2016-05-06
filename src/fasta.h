@@ -15,9 +15,9 @@ typedef struct sequence_t {
 
 SequencePtr _initStructSequence(const char* src, int line);
 #define initStructSequence() _initStructSequence(__FILE__, __LINE__);
+void SequenceFree(SequencePtr seq);
 
 void readOneSequenceFromFile(gzFile file, SequencePtr seq);
-void SequenceFree(SequencePtr seq);
 void check_reference (SequencePtr seq);
 
 

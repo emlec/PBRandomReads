@@ -10,8 +10,8 @@
 # $^  all the dependencies
 
 CC = gcc
-CFLAGS = -Wall -g
-LDFLAGS = -lz 
+CFLAGS = -Wall -g -fsanitize=address -fno-omit-frame-pointer
+LDFLAGS = -lz -fsanitize=address
 EXEC = PBRandomReads_draft
 
 

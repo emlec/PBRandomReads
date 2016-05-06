@@ -18,9 +18,6 @@
 // Example : >Read1
 //           ATCCc (lowerletter for insertion or substitution)
 
-// TODO : reverse complement, fonction parsing
-// DEBUG : distribution insilico read 
-// ADD : print percent, modification to check
 
 
 int main (int argc, char** argv) {
@@ -36,7 +33,8 @@ int main (int argc, char** argv) {
     gzFile reference_file = NULL;        // fasta file containing the sequence of reference
     SequencePtr referencePtr = initStructSequence();
 
-    gzFile inSilicoReadsFile = NULL;                // Will contain the PB InSilico reads          
+    gzFile inSilicoReadsFile = NULL;                // Will contain the PB InSilico reads   
+    MuteStatsPtr muteStatsPtr = initStructMuteStats();      
     InSilicoReadsPtr inSilicoDataSet_Ptr = NULL;
    
     time(&begin);
@@ -93,39 +91,39 @@ int main (int argc, char** argv) {
 
 
 // Part1
-
+    fprintf(stderr,"##########\nPART 1\n##########\n");
     make_distribution(PBReads_fastqFile, readsDistrPtr,4);
     check_distribution(readsDistrPtr);
-    fprintf(stderr, "Part1 successfull\n\n");
-
+    fprintf(stderr, "\nPart 1 successfull\n\n");
 
 // Part 2
-    
+    fprintf(stderr,"##########\nPART 2\n##########\n");
     readOneSequenceFromFile(reference_file, referencePtr);
     check_reference (referencePtr);
-    fprintf(stderr, "Part2 successfull\n\n");
+    fprintf(stderr, "\nPart 2 successfull\n\n");
     
 // Part 3
-
-    inSilicoDataSet_Ptr = initStructInSilicoReads(referencePtr, inSilicoReadsFile, readsDistrPtr);
+    fprintf(stderr,"##########\nPART 3\n##########\n");
+    inSilicoDataSet_Ptr = initStructInSilicoReads(referencePtr, inSilicoReadsFile, readsDistrPtr, muteStatsPtr);
     create_PBRandomReads(inSilicoDataSet_Ptr);
-    //check_PBDataSet(inSilicoDataSet_Ptr);
     check_PBDataSet(inSilicoDataSet_Ptr, filename_InSilicoReads);
-    fprintf(stderr, "Part3 successfull\n\n");
+    fprintf(stderr, "\nPart 3 successfull\n\n");
 
 
 
 // End
 
+    time(&end);
+    fprintf(stderr, "Elapsed time %f sec.\n", difftime(end, begin));
+
     gzclose(PBReads_fastqFile);
+    gzclose(reference_file);
     gzclose(inSilicoReadsFile);
+    
     SequenceFree(referencePtr);
     ReadFree(readsDistrPtr);
+    MuteStats_Free(muteStatsPtr);
     inSilicoDataSet_Free(inSilicoDataSet_Ptr);
-
-    time(&end);
-
-    fprintf(stderr, "Elapsed time %f sec.\n", difftime(end, begin));
 
     return 0;
     }
