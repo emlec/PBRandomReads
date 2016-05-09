@@ -5,6 +5,49 @@
 #include "utils.h"
 #include "fasta.h"
 
+
+static char complementaryBase(char base){
+    switch (toupper(base)) {
+        case 'A' :  return 'T'; break;
+        case 'T' :  return 'A'; break;
+        case 'C' :  return 'G'; break;
+        case 'G' :  return 'C'; break;
+        case 'N' :  return 'N'; break;
+        default : fprintf(stderr, "Debug the complementary base : [%s:%d] \n", __FILE__, __LINE__); exit(EXIT_FAILURE);
+    }
+    return base_complement;
+}
+
+static makeRnd(SequencePtr seqPtr )
+	{
+	int plus_strand=(rand...);
+	int start = ..
+	int end = start + length...
+	int fragment_length= end-start;
+	for(i=0; i < fragment_length ;++i)	{
+		char c;
+		if(plus_strand)
+			{
+			c= seqPtr->bases[(start+i)%(seqPtr->length)];
+			}
+		else
+			{
+			c = seqPtr->bases[(end-i)%(seqPtr->length)];
+			switch(c)
+				{
+				case 'A' : case 'a': c= 't'; 
+				}
+			}
+		
+	
+	
+		}
+	
+	
+	
+	
+	}
+
 MuteStatsPtr _initStructMuteStats(const char* src, int line) {
     MuteStatsPtr muteStats = (MuteStatsPtr)safeCalloc(1, sizeof(MuteStats));
     muteStats->cptINS=0;
@@ -63,7 +106,7 @@ void create_PBRandomReads (InSilicoReadsPtr inSilicoDataSet){
                 }
             else {continue;}
             }
-        gzclose(inSilicoDataSet->inSilicoReadsFile);
+        //gzclose(inSilicoDataSet->inSilicoReadsFile);
     }
 
 
@@ -160,7 +203,7 @@ void write_OriginalStrand_Read(InSilicoReadsPtr inSilicoDataSet, unsigned int i,
         inSilicoDataSet->muteStats->cptNOMUTE+=cptNoMute;
         inSilicoDataSet->muteStats->cptDEL+=cptDel;
 }
-
+ write_OriginalStrand_Read
 void write_ReverseComplementaryStrand_Read(InSilicoReadsPtr inSilicoDataSet, unsigned int i, int readNb){
     int k;
     int start_position = 0;
@@ -236,14 +279,4 @@ void write_ReverseComplementaryStrand_Read(InSilicoReadsPtr inSilicoDataSet, uns
                                        
 }
 
-char complementaryBase(char base){
-    char base_complement = NULL;;
-    switch (toupper(base)) {
-        case 'A' :  base_complement='T'; break;
-        case 'T' :  base_complement='A'; break;
-        case 'C' :  base_complement='G'; break;
-        case 'G' :  base_complement='C'; break;
-        default : fprintf(stderr, "Debug the complementary base : [%s:%d] \n", __FILE__, __LINE__); exit(EXIT_FAILURE);
-    }
-    return base_complement;
-}
+

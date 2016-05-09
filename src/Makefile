@@ -8,10 +8,11 @@
 # $@ target name
 # $< first dependency
 # $^  all the dependencies
-
+# -fsanitize=address -fno-omit-frame-pointer
+# -fsanitize=address
 CC = gcc
-CFLAGS = -Wall -g -fsanitize=address -fno-omit-frame-pointer
-LDFLAGS = -lz -fsanitize=address
+CFLAGS = -Wall -g 
+LDFLAGS = -lz 
 EXEC = PBRandomReads_draft
 
 

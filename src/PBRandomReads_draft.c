@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 #include <time.h>
 #include <ctype.h>
 #include <errno.h>
@@ -84,6 +85,10 @@ int main (int argc, char** argv) {
     if (filename_InSilicoReads == NULL) {
         fprintf(stderr,"Writing output to STDOUT\n");
         inSilicoReadsFile = gzdopen(fileno(stdout), "wb");
+        if(inSilicoReadsFile==NULL)  {
+        	fprintf(stderr,"[%s-%d] Cannot write to stdout\n",__FILE__,__LINE__);
+        	return EXIT_FAILURE;
+        	}
         }
     else {
         inSilicoReadsFile = safeOpen(filename_InSilicoReads,"wb");
