@@ -70,14 +70,16 @@ void create_PBRandomReads (InSilicoReadsPtr inSilicoDataSet){
 void check_PBDataSet(InSilicoReadsPtr inSilicoDataSet, char* filename_InSilicoReads){
     
     float cptTOT = inSilicoDataSet->muteStats->cptINS + inSilicoDataSet->muteStats->cptDEL + inSilicoDataSet->muteStats->cptSUBST + inSilicoDataSet->muteStats->cptNOMUTE;
+    
     Read_DistributionPtr InSilicoDistr = initStructReadDistribution();
     inSilicoDataSet->inSilicoReadsFile = safeOpen(filename_InSilicoReads,"rb");
     make_distribution(inSilicoDataSet->inSilicoReadsFile,InSilicoDistr, 2);
     check_distribution(InSilicoDistr);
     fprintf(stderr, "Statistiques of mutations :\nInsertion %.1f%%\t Deletion %.1f%%\t Substitution %.1f%%\t  No mutation %.1f%% \n", (inSilicoDataSet->muteStats->cptINS/cptTOT)*100, (inSilicoDataSet->muteStats->cptDEL/cptTOT)*100, (inSilicoDataSet->muteStats->cptSUBST/cptTOT)*100, (inSilicoDataSet->muteStats->cptNOMUTE/cptTOT)*100);
+    hist_to_R (InSilicoDistr);
     ReadFree(InSilicoDistr);
-}
 
+}
 
 void inSilicoDataSet_Free(InSilicoReadsPtr inSilicoDataSet){
     if(inSilicoDataSet==NULL) return;

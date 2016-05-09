@@ -61,8 +61,6 @@ void readOneSequenceFromFile(gzFile file, SequencePtr seq) {
     seq->length=current_bases_added;
 }
 
-
-
 void check_reference (SequencePtr seq){
     
     unsigned int i; 
@@ -72,7 +70,6 @@ void check_reference (SequencePtr seq){
         }
     fprintf(stderr,"Size of the sequence of reference : %d\n", seq->length);
     }
-
 
 void SequenceFree(SequencePtr seq) {
     if(seq==NULL) return;   // void donc return rien accepté

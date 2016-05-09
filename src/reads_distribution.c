@@ -67,6 +67,18 @@ void check_distribution (Read_DistributionPtr reads){
     fprintf(stderr,"The max size of read is : %d bases\t Total number of bases %d\n", reads->max_length, cptBases);
 }
 
+void hist_to_R (Read_DistributionPtr reads){
+    unsigned int i;
+    gzFile output_hist_file = NULL;
+    char* filename_output_hist = "output_hist";
+    
+    output_hist_file = safeOpen(filename_output_hist,"w");
+    gzprintf(output_hist_file,"%s\t%s\n", "size of read", "number of read");
+    for (i=0; i<reads->max_length; i++) {
+        gzprintf(output_hist_file,"%d\t%d\n", i+1, reads->num_elements[i]);
+    }
+    gzclose(output_hist_file);
+}
 
 
 void ReadFree(Read_DistributionPtr reads) {

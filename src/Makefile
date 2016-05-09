@@ -16,11 +16,12 @@ EXEC = PBRandomReads_draft
 
 
 
-.PHONY:all clean mrproper
+.PHONY: test all clean mrproper
+
+##$>/dev/null 
 
 test: all
-	../bin/${EXEC} -r ../testFiles/10basesRef.fa -o ../outputResult -s ../testFiles/3reads.fq > /dev/null 
-
+	../bin/${EXEC} -r ../testFiles/10basesRef.fa -o ../outputResult -s ../testFiles/3reads.fq
 
 all: ../bin/${EXEC}
 
