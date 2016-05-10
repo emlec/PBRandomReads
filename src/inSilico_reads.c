@@ -63,7 +63,6 @@ void create_PBRandomReads (InSilicoReadsPtr inSilicoDataSet){
                 }
             else {continue;}
             }
-        gzclose(inSilicoDataSet->inSilicoReadsFile);
     }
 
 
@@ -97,7 +96,7 @@ void write_OriginalStrand_Read(InSilicoReadsPtr inSilicoDataSet, unsigned int i,
     int k;
     int start_position = 0;
     int unsigned prob_mutation=0;
-    char* strand;
+    //char* strand;
     char ins;               // the inserted base
     char mute;              // the mutated base
     float cptIns=0;
@@ -105,8 +104,8 @@ void write_OriginalStrand_Read(InSilicoReadsPtr inSilicoDataSet, unsigned int i,
     float cptSubst=0;
     float cptNoMute=0;
     
-    strand = "originalStrand"; 
-    gzprintf(inSilicoDataSet->inSilicoReadsFile, ">m160129_165300_42263_c100880132550000001823194304021670_s1_X0/%d_%s/0_%d\n", readNb,strand, i);  // For FALCON compatibility
+    //strand = "originalStrand"; 
+    gzprintf(inSilicoDataSet->inSilicoReadsFile, ">m160129_165300_42263_c100880132550000001823194304021670_s1_X0/%d/0_%d\n", readNb, i);  // For FALCON compatibility      //Delete RCS/OS
    
     start_position = 1 + rand()%inSilicoDataSet->seq->length;      // select the beginning in the reference genome
     for (k=0; k<=i;k++){
@@ -161,11 +160,11 @@ void write_OriginalStrand_Read(InSilicoReadsPtr inSilicoDataSet, unsigned int i,
         inSilicoDataSet->muteStats->cptDEL+=cptDel;
 }
 
-void write_ReverseComplementaryStrand_Read(InSilicoReadsPtr inSilicoDataSet, unsigned int i, int readNb){
+void write_ReverseComplementaryStrand_Read(InSilicoReadsPtr inSilicoDataSet, unsigned int i, int unsigned readNb){
     int k;
     int start_position = 0;
     int unsigned prob_mutation=0;
-    char* strand;
+    //char* strand;
     char ins;               // the inserted base
     char mute;              // the mutated base
     char base_complement;
@@ -174,8 +173,8 @@ void write_ReverseComplementaryStrand_Read(InSilicoReadsPtr inSilicoDataSet, uns
     float cptSubst=0;
     float cptNoMute=0;
     
-    strand = "reverseComplementaryStrand"; 
-    gzprintf(inSilicoDataSet->inSilicoReadsFile, ">m160129_165300_42263_c100880132550000001823194304021670_s1_X0/%d_%s/0_%d\n", readNb,strand, i);  // For FALCON compatibility
+    //strand = "reverseComplementaryStrand"; 
+    gzprintf(inSilicoDataSet->inSilicoReadsFile, ">m160129_165300_42263_c100880132550000001823194304021670_s1_X0/%d/0_%d\n", readNb,i);  // For FALCON compatibility  Delete RCS/OS
     start_position = 1 + rand()%inSilicoDataSet->seq->length;      // select the beginning in the reference genome
     
     
