@@ -18,5 +18,4 @@ void* _safeRealloc(const char* src, int line, void *ptr, size_t size);
 gzFile _safeOpen(const char* src, int line, const char* filename, const char* mode);
 #define safeOpen(FILENAME,MODE) _safeOpen(__FILE__, __LINE__, FILENAME, MODE);
 
-
 #endif

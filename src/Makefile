@@ -8,10 +8,11 @@
 # $@ target name
 # $< first dependency
 # $^  all the dependencies
-
+# -fsanitize=address -fno-omit-frame-pointer
+# -fsanitize=address
 CC = gcc
-CFLAGS = -Wall -g -fsanitize=address -fno-omit-frame-pointer
-LDFLAGS = -lz -fsanitize=address
+CFLAGS = -Wall -g 
+LDFLAGS = -lz 
 EXEC = PBRandomReads_draft
 
 
@@ -21,7 +22,7 @@ EXEC = PBRandomReads_draft
 ##$>/dev/null 
 
 test: all
-	../bin/${EXEC} -r ../testFiles/10basesRef.fa -o ../outputResult -s ../testFiles/3reads.fq
+	../bin/${EXEC} -r ../testFiles/20bases.ref.fa -o ../outputResult -s ../testFiles/3reads.fq
 
 all: ../bin/${EXEC}
 

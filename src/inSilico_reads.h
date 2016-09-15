@@ -38,9 +38,9 @@ void check_PBDataSet(InSilicoReadsPtr inSilicoDataSet, char* filename_InSilicoRe
 void inSilicoDataSet_Free(InSilicoReadsPtr inSilicoDataSet);
 
 void write_OriginalStrand_Read(InSilicoReadsPtr inSilicoDataSet, unsigned int i, int unsigned readNb);
-void write_ReverseComplementaryStrand_Read(InSilicoReadsPtr inSilicoDataSet, unsigned int i, int readNb);
-char complementaryBase(char base);
-
+void write_ReverseComplementaryStrand_Read(InSilicoReadsPtr inSilicoDataSet, unsigned int i, int unsigned readNb);
+//char complementaryBase(char base);
+void assembly_length_cutoff(InSilicoReadsPtr inSilicoDataSet,  Read_DistributionPtr InSilicoDistr, unsigned int coverage);
 
 
 #endif
